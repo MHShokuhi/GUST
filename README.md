@@ -21,6 +21,6 @@ graph TD
 
 | name | contribution |
 |------ | ---------------- |
-| lanefiedler | built the framework for the proxy
-| dinguschan | designed the browser interface and added various features
-x8rr | bug fixing and feedback, some assistance
+| lanefiedler | built the original framework and original ui frame for the proxy
+| dinguschan | designed the browser interface, rewrote much of the proxy js, features
+x8rr | bug fixing and feedback, some assistance, readme

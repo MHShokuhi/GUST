@@ -35,7 +35,18 @@ Instead, it uses **libcurl.js**, a full HTTP library compiled to WebAssembly, to
 - ✅ **It can be copy-pasted into any WYSIWYG HTML editor on the web**, because again, it's just HTML with CSS and JS inlined
 - ✅ **It can be compiled into a blob: or data: url and opened that way**, again, HTML
 
-The short version: most blockers can only block URLs. GUST is a file. You can't block a file without obliterating a cruical part of the student user experience, and even if they take that drastic step, well, HTML can be hosted or opened in litrally anything. It's the frame of the world wide web
+The short version: most blockers can only block URLs. GUST is a file. You can't block a file without obliterating a cruical part of the student user experience, and even if they take that drastic step, well, HTML can be hosted or opened in litrally anything. It's the frame of the world wide web. no more whack-a-mole, cat-and-mouse game of finding unblocked links and your school blocking them!
+
+---
+
+## Pics
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/93db1bf0-2e4e-431e-a273-79f9229df4f4" />
+<img width="1919" height="969" alt="image" src="https://github.com/user-attachments/assets/fcc15a77-dde1-4d22-bfc7-d809acfe2891" />
+<img width="1920" height="973" alt="image" src="https://github.com/user-attachments/assets/c1388250-65a4-4878-9481-a2539c33079e" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3d332a9f-7713-419d-9350-bbe6c104a892" />
+<img width="1920" height="973" alt="image" src="https://github.com/user-attachments/assets/3254ba60-0636-4ae9-962c-7173c0b358de" />
+<img width="1920" height="973" alt="image" src="https://github.com/user-attachments/assets/0914ae53-eb7c-432a-9566-55c6923818ed" />
+<img width="1920" height="973" alt="image" src="https://github.com/user-attachments/assets/17fb9ac8-15c8-4881-b65f-a0dc92324256" />
 
 ---
 
@@ -46,6 +57,8 @@ Done? | Target deadline | Details<br><br>
 - [ ] 4/30/2026 | Create and deploy website for GUST, not actual GUST Browser, instead a custom patcher to download your desired version. Should not be blocked by blocking software, as it will have no proxy related text on it, only options for a custom gust version and a download button.
 - [ ] ??? | Add feature to auto update GUST so the user doesnt have to keep downloading from GitHub
 - [ ] beats me | fix following links by clicking
+- [ ] dunno | fix bug where element highlighting in custom element inspector is broken, also u cant untoggle the details in element inspector
+- [ ] uhm | adblock modal is misplaced
 
 ---
 ## How it works

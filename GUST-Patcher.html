@@ -209,7 +209,7 @@ button,input,select,textarea{font:inherit}
 .homepage-brand-wrap{display:flex;align-items:center;gap:14px}
 .hp-brand-letters{display:inline-flex;letter-spacing:5px;font-size:56px;font-weight:800;color:var(--ac)}
 .hp-brand-sub{font-size:56px;font-weight:800;color:var(--ac);margin-left:4px;letter-spacing:4px}
-.hp-icon{font-size:42px;color:var(--ac)}
+.hp-icon{font-size:64px;color:var(--ac)}
 .homepage-tagline{font-size:13px;color:var(--tx3);margin-top:10px;letter-spacing:0.04em}
 .homepage-credits{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx3);margin-top:16px}
 .homepage-credits .heart{color:#f87171}
@@ -270,7 +270,7 @@ button,input,select,textarea{font:inherit}
     <button class="btn-secondary" id="reloadSourceBtn"><i class="fas fa-rotate-right"></i> Refresh Source</button>
     <button class="btn-secondary" id="pasteSourceBtn" title="Paste GUST source manually"><i class="fas fa-paste"></i> Paste Source</button>
     <button class="btn-secondary" id="githubBtn" onclick="window.open('https://github.com/nautilus-os/GUST','_blank')" title="View GUST on GitHub" style="padding:0;width:36px;justify-content:center;"><i class="fab fa-github" style="font-size:17px;line-height:1"></i></button>
-    <button class="btn-primary" id="downloadBtn" disabled><i class="fas fa-download"></i> Download GUST</button>
+    <button class="btn-primary" id="downloadBtn" disabled><i class="fas fa-download"></i> Download Patched GUST</button>
   </div>
 </div>
 
@@ -335,7 +335,7 @@ button,input,select,textarea{font:inherit}
         <div class="preset-card-desc">Download the latest unmodified GUST source directly from the official GitHub repository, with no custom patches applied. The most stable version of GUST, and the team at Nautilus Labs's recommended build.</div>
       </div>
       <div class="preset-card-footer">
-        <button class="preset-dl-btn primary" id="presetBaseBtn" onclick="downloadBaseGUST()"><i class="fas fa-download"></i> Download Base</button>
+        <button class="preset-dl-btn primary" id="presetBaseBtn" onclick="downloadBaseGUST()"><i class="fas fa-download"></i> Download Base GUST</button>
       </div>
     </div>
 
@@ -601,7 +601,7 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-window-restore"></i> Tab System</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Drag-to-reorder tabs</div><div class="patch-row-desc">Hides drag ghost and drop slot elements. Tabs can still be clicked but cannot be reordered by dragging.</div></div><div class="patch-check checked" data-patch="tab-drag" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Drag-to-reorder tabs</div><div class="patch-row-desc">Blocks the pointer events that drive tab dragging. Tabs cannot be grabbed or reordered — no ghost, no slot, no reorder.</div></div><div class="patch-check checked" data-patch="tab-drag" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
       <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Right-click context menu on tabs</div><div class="patch-row-desc">Hides the tab context menu element. Right-clicking a tab will do nothing.</div></div><div class="patch-check checked" data-patch="tab-context" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
       <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Audio mute controls on tabs</div><div class="patch-row-desc">Hides the mute icon on tabs that are playing audio. Audio will still play — it just can't be muted from the tab.</div></div><div class="patch-check checked" data-patch="tab-mute" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
     </div>
@@ -747,6 +747,10 @@ function updateCounts() {
     b.classList.toggle('lit', map[s].on > 0);
   });
   document.getElementById('totalCount').textContent = totalOn + '/' + totalAll;
+  const dlBtn = document.getElementById('downloadBtn');
+  if (dlBtn && !dlBtn.disabled && sourceLoaded) {
+    dlBtn.disabled = totalOn === 0;
+  }
 }
 
 function togglePatch(el) { el.classList.toggle('checked'); updateCounts(); }
@@ -1034,7 +1038,7 @@ function buildPatchScript(removedPatches) {
   if (rm.has('bookmarks-bar'))
     css('#settingsBookmarksBarSwitch');
   if (rm.has('nt-wallpaper'))
-    css('#settingsWallpaperChange,#settingsWallpaperReset,#settingsWallpaperStatus,#wallpaperModal');
+    css('#settingsWallpaperChange,#settingsWallpaperReset,#settingsWallpaperStatus,#wallpaperModal,#ntWallpaperBtn');
   if (rm.has('nt-clock'))
     css('#settingsClockSwitch');
   if (rm.has('nt-clock24'))
@@ -1054,9 +1058,7 @@ function buildPatchScript(removedPatches) {
   if (rm.has('adblock-panel'))
     css('#adblockModal,#blockToggle');
 
-  // Core — Tab System
-  if (rm.has('tab-drag'))
-    css('.tab-drag-ghost,.tab-drag-slot');
+  // Core — Tab System (tab-drag handled above with JS block)
   if (rm.has('tab-context'))
     css('#tabContextMenu');
   if (rm.has('tab-mute'))
@@ -1088,7 +1090,26 @@ function buildPatchScript(removedPatches) {
     js('  };');
     js('})();');
   }
-  if (rm.has('tab-drag'))    stubFns(['initTabDrag','setupTabDrag','enableTabDrag']);
+  if (rm.has('tab-drag')) {
+    // The drag handler is an IIFE — there's no global to stub.
+    // Instead we inject a capture-phase pointerdown listener that
+    // intercepts any pointerdown on a .tab element and stops it
+    // from propagating to GUST's drag handler, while still allowing
+    // normal click/close events (which use click/pointerup, not pointerdown).
+    js('(function(){');
+    js('  document.addEventListener("pointerdown", function(e){');
+    js('    if(e.button!==0) return;');
+    js('    var tab=e.target.closest(".tab[data-tab-id]");');
+    js('    if(!tab) return;');
+    js('    if(e.target.closest(".tab-close")) return;');
+    js('    // Stop GUST\'s drag listener from firing; click still works');
+    js('    e.stopImmediatePropagation();');
+    js('    // Re-fire a plain click so tab switching still works');
+    js('    tab.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true}));');
+    js('  }, true);');
+    js('})();');
+    css('.tab-drag-ghost,.tab-drag-slot,.tab-dragging');
+  }
   if (rm.has('tab-context')) stubFns(['showTabContext','tabContextMenu','openTabMenu']);
   if (rm.has('dev-logs'))      stubFns(['initLogPanel','toggleLogPanel','addLog','logRequest','toggleLogs']);
   if (rm.has('dev-inspector')) stubFns(['initInspector','toggleInspector','inspectElement','toggleElements']);
@@ -1225,12 +1246,26 @@ const patcherTutSteps = [
     pos: 'below'
   },
   {
-    target: '#homepagePresets',
     icon: '<i class="fas fa-box-open"></i>',
     title: 'Quick Presets',
     body: 'Need a fast start? Grab <strong>Base GUST</strong> straight from GitHub, or <strong>GUST Lite</strong> — a trimmed build with bloat already removed.',
     pos: 'above',
+    pad: 10,
+    cloneSelector: '#homepagePresets .preset-card',
     navDelay: 200,
+    getBounds: function() {
+      const cards = document.querySelectorAll('#homepagePresets .preset-card');
+      if (!cards.length) return null;
+      let minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
+      cards.forEach(c => {
+        const r = c.getBoundingClientRect();
+        if (r.left < minL) minL = r.left;
+        if (r.top < minT) minT = r.top;
+        if (r.right > maxR) maxR = r.right;
+        if (r.bottom > maxB) maxB = r.bottom;
+      });
+      return { left: minL, top: minT, right: maxR, bottom: maxB, width: maxR - minL, height: maxB - minT };
+    },
     onBefore: function() {
       const homeBtn = document.querySelector('.settings-nav-item[data-section="homepage"]');
       if (homeBtn) homeBtn.click();
@@ -1313,10 +1348,9 @@ function showPatcherTutStep(idx) {
     const sr = document.getElementById('patcherSpotRect');
     if (cloneWrap) cloneWrap.innerHTML = '';
 
-    if (step.target) {
-      const el = document.querySelector(step.target);
-      if (el) {
-        const r = el.getBoundingClientRect();
+    if (step.target || step.getBounds) {
+      const r = step.getBounds ? step.getBounds() : (() => { const el = document.querySelector(step.target); return el ? el.getBoundingClientRect() : null; })();
+      if (r) {
         const pad = step.pad !== undefined ? step.pad : 6;
 
         // SVG cutout
@@ -1324,22 +1358,23 @@ function showPatcherTutStep(idx) {
         sr.setAttribute('y', r.top - pad);
         sr.setAttribute('width', r.width + pad*2);
         sr.setAttribute('height', r.height + pad*2);
-        sr.setAttribute('rx', '10');
+        sr.setAttribute('rx', pad > 10 ? '20' : '10');
 
         // Ring overlay
         ringDiv.style.left = (r.left-pad)+'px';
         ringDiv.style.top = (r.top-pad)+'px';
         ringDiv.style.width = (r.width+pad*2)+'px';
         ringDiv.style.height = (r.height+pad*2)+'px';
-        ringDiv.style.borderRadius = '10px';
+        ringDiv.style.borderRadius = (pad > 10 ? '20px' : '10px');
         ringDiv.style.display = 'block';
 
         // Clone the element and place it on top of the blur
-        if (cloneWrap) {
+        const cloneSourceEl = step.target ? document.querySelector(step.target) : null;
+        if (cloneWrap && cloneSourceEl) {
           try {
-            const clone = el.cloneNode(true);
+            const clone = cloneSourceEl.cloneNode(true);
             clone.removeAttribute('id');
-            const computedBR = getComputedStyle(el).borderRadius || '0px';
+            const computedBR = getComputedStyle(cloneSourceEl).borderRadius || '0px';
             clone.style.cssText = '';
             clone.style.position = 'absolute';
             clone.style.left = r.left + 'px';
@@ -1361,9 +1396,9 @@ function showPatcherTutStep(idx) {
             clone.style.opacity = '1';
             clone.style.zIndex = '2';
             // preserve the original background so the clone looks right
-            clone.style.background = getComputedStyle(el).background;
+            clone.style.background = getComputedStyle(cloneSourceEl).background;
             // preserve flex layout so button contents stay centered
-            const cs = getComputedStyle(el);
+            const cs = getComputedStyle(cloneSourceEl);
             if (cs.display === 'flex' || cs.display === 'inline-flex') {
               clone.style.display = cs.display;
               clone.style.alignItems = cs.alignItems;
@@ -1372,6 +1407,46 @@ function showPatcherTutStep(idx) {
             }
             cloneWrap.appendChild(clone);
           } catch(e) {}
+        } else if (cloneWrap && step.getBounds) {
+          // For getBounds steps, clone each source element individually
+          const cloneTargets = step.cloneSelector ? document.querySelectorAll(step.cloneSelector) : [];
+          cloneTargets.forEach(srcEl => {
+            try {
+              const er = srcEl.getBoundingClientRect();
+              const clone = srcEl.cloneNode(true);
+              clone.removeAttribute('id');
+              clone.querySelectorAll('[id]').forEach(c => c.removeAttribute('id'));
+              clone.style.cssText = '';
+              clone.style.position = 'absolute';
+              clone.style.left = er.left + 'px';
+              clone.style.top = er.top + 'px';
+              clone.style.width = er.width + 'px';
+              clone.style.height = er.height + 'px';
+              clone.style.margin = '0';
+              clone.style.pointerEvents = 'none';
+              clone.style.boxSizing = 'border-box';
+              clone.style.borderRadius = getComputedStyle(srcEl).borderRadius || '0px';
+              clone.style.overflow = 'hidden';
+              clone.style.transform = 'none';
+              clone.style.animation = 'none';
+              clone.style.transition = 'none';
+              clone.style.filter = 'none';
+              clone.style.backdropFilter = 'none';
+              clone.style.webkitBackdropFilter = 'none';
+              clone.style.boxShadow = 'none';
+              clone.style.opacity = '1';
+              clone.style.zIndex = '2';
+              clone.style.background = getComputedStyle(srcEl).background;
+              const cs = getComputedStyle(srcEl);
+              if (cs.display === 'flex' || cs.display === 'inline-flex') {
+                clone.style.display = cs.display;
+                clone.style.flexDirection = cs.flexDirection;
+                clone.style.alignItems = cs.alignItems;
+                clone.style.justifyContent = cs.justifyContent;
+              }
+              cloneWrap.appendChild(clone);
+            } catch(e) {}
+          });
         }
 
         if (svgEl) svgEl.style.opacity = '1';
@@ -1530,7 +1605,7 @@ function downloadBaseGUST() {
     .then(r => { if (!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
     .then(text => { triggerDownload(text, 'GUST.html'); })
     .catch(() => { window.open('https://github.com/nautilus-os/GUST/raw/refs/heads/main/index.html','_blank'); })
-    .finally(() => { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Download Base'; } });
+    .finally(() => { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download"></i> Download Base GUST'; } });
 }
 
 const LITE_PATCHES = [

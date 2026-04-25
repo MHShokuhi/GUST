@@ -183,6 +183,16 @@ button,input,select,textarea{font:inherit}
 .patch-row.master-disabled{opacity:0.35;pointer-events:none;transition:opacity .18s;}
 .settings-card.master-disabled{opacity:0.35;pointer-events:none;transition:opacity .18s;}
 
+/* Sidebar master toggle bar */
+.sidebar-master-bar{display:flex;align-items:center;gap:14px;padding:13px 18px;background:var(--bg2);border:2px solid var(--ac);border-radius:12px;margin-bottom:0;}
+.sidebar-master-bar-icon{width:34px;height:34px;border-radius:9px;background:rgba(157,229,255,0.1);display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:14px;flex-shrink:0;}
+.sidebar-master-bar-info{flex:1;min-width:0;}
+.sidebar-master-bar-label{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:2px;}
+.sidebar-master-bar-desc{font-size:11px;color:var(--tx3);line-height:1.4;}
+.sidebar-master-check{width:24px;height:24px;border-radius:7px;border:2px solid rgba(157,229,255,0.35);background:rgba(157,229,255,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,background .15s;}
+.sidebar-master-check.checked{border-color:var(--ac);background:rgba(157,229,255,0.15);}
+.sidebar-master-check.checked::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:12px;color:var(--ac);}
+
 /* Section header */
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .section-title{font-size:18px;font-weight:700;color:var(--tx)}
@@ -369,6 +379,14 @@ button,input,select,textarea{font:inherit}
 <!-- LANGUAGE -->
 <div class="settings-section" data-section="language">
   <div class="section-head"><div class="section-title">Language</div><div class="select-btns"><button class="select-btn" onclick="selectAll('language',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('language',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Language in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Language</strong> entry from GUST's Settings sidebar. The (non-functional) language picker panel will be hidden and its nav entry removed entirely.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-language" data-section="language" data-master-for="language" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-language"></i> Language <span class="broken-tag">[BROKEN]</span></div>
     <div class="settings-card-body">
@@ -380,6 +398,14 @@ button,input,select,textarea{font:inherit}
 <!-- CONNECTION -->
 <div class="settings-section" data-section="connection">
   <div class="section-head"><div class="section-title">Connection</div><div class="select-btns"><button class="select-btn" onclick="selectAll('connection',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('connection',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Connection in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Connection</strong> entry from GUST's Settings sidebar. WISP URL, thread controls, WebRTC blocking, and smart headers will all be hidden from Settings and locked to their defaults.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-connection" data-section="connection" data-master-for="wisp-url threads webrtc-block media-headers" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-network-wired"></i> WISP Server</div>
     <div class="settings-card-body">
@@ -409,6 +435,14 @@ button,input,select,textarea{font:inherit}
 <!-- FALLBACK -->
 <div class="settings-section" data-section="fallback">
   <div class="section-head"><div class="section-title">Fallback WISP</div><div class="select-btns"><button class="select-btn" onclick="selectAll('fallback',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('fallback',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Fallback in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Fallback</strong> entry from GUST's Settings sidebar. The fallback toggle, fallback WISP URL, retry policy, and error triggers will all be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-fallback" data-section="fallback" data-master-for="fallback-enabled fallback-wisp fallback-retries fallback-triggers" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-toggle-on"></i> Fallback Toggle</div>
     <div class="settings-card-body">
@@ -438,6 +472,14 @@ button,input,select,textarea{font:inherit}
 <!-- SEARCH -->
 <div class="settings-section" data-section="search">
   <div class="section-head"><div class="section-title">Search</div><div class="select-btns"><button class="select-btn" onclick="selectAll('search',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('search',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Search in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Search</strong> entry from GUST's Settings sidebar. The search engine picker, spellcheck toggle, and favicon proxy option will all be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-search" data-section="search" data-master-for="search-engine spellcheck search-favicon" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-magnifying-glass"></i> Default Search Engine</div>
     <div class="settings-card-body">
@@ -461,6 +503,14 @@ button,input,select,textarea{font:inherit}
 <!-- PRIVACY -->
 <div class="settings-section" data-section="privacy">
   <div class="section-head"><div class="section-title">Privacy</div><div class="select-btns"><button class="select-btn" onclick="selectAll('privacy',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('privacy',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Privacy in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Privacy</strong> entry from GUST's Settings sidebar. Ad blocking, JS proxy, user-agent spoofing, and custom filter rules will all be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-privacy" data-section="privacy" data-master-for="adblock-toggle js-proxy ua-request ua-page custom-filters" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-shield-halved"></i> Privacy &amp; Blocking</div>
     <div class="settings-card-body">
@@ -491,6 +541,14 @@ button,input,select,textarea{font:inherit}
 <!-- CACHE -->
 <div class="settings-section" data-section="cache">
   <div class="section-head"><div class="section-title">Cache</div><div class="select-btns"><button class="select-btn" onclick="selectAll('cache',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('cache',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Cache in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Cache</strong> entry from GUST's Settings sidebar. Tab caching and the Clear Cache / Reset Everything buttons will both be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-cache" data-section="cache" data-master-for="tab-cache clear-cache" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-layer-group"></i> Tab Caching</div>
     <div class="settings-card-body">
@@ -508,6 +566,14 @@ button,input,select,textarea{font:inherit}
 <!-- FILES & MEDIA -->
 <div class="settings-section" data-section="filesandmedia">
   <div class="section-head"><div class="section-title">Files &amp; Media</div><div class="select-btns"><button class="select-btn" onclick="selectAll('filesandmedia',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('filesandmedia',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Files &amp; Media in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Files &amp; Media</strong> entry from GUST's Settings sidebar. Range requests, auto-download, and all inline viewer toggles (PDF, image, video, audio, text) will be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-filesandmedia" data-section="filesandmedia" data-master-for="media-range media-download media-pdf media-img media-video media-audio media-text" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-film"></i> Media Range Requests</div>
     <div class="settings-card-body">
@@ -555,6 +621,14 @@ button,input,select,textarea{font:inherit}
 <!-- APPEARANCE -->
 <div class="settings-section" data-section="appearance">
   <div class="section-head"><div class="section-title">Appearance</div><div class="select-btns"><button class="select-btn" onclick="selectAll('appearance',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('appearance',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Appearance in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Appearance</strong> entry from GUST's Settings sidebar. Font size, panel width persistence, panel position, and fullscreen-on-launch will all be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-appearance" data-section="appearance" data-master-for="font-size panel-widths panels-left auto-fullscreen" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-text-width"></i> Font Size</div>
     <div class="settings-card-body">
@@ -584,6 +658,14 @@ button,input,select,textarea{font:inherit}
 <!-- HOME SCREEN -->
 <div class="settings-section" data-section="homescreen">
   <div class="section-head"><div class="section-title">Home Screen</div><div class="select-btns"><button class="select-btn" onclick="selectAll('homescreen',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('homescreen',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Home Screen in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Home Screen</strong> entry from GUST's Settings sidebar. The bookmarks bar toggle, wallpaper controls, and clock options will all be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-homescreen" data-section="homescreen" data-master-for="bookmarks-bar nt-wallpaper nt-clock nt-clock24" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-bookmark"></i> Bookmarks Bar</div>
     <div class="settings-card-body">
@@ -608,6 +690,14 @@ button,input,select,textarea{font:inherit}
 <!-- SHORTCUTS -->
 <div class="settings-section" data-section="shortcuts">
   <div class="section-head"><div class="section-title">Shortcuts</div><div class="select-btns"><button class="select-btn" onclick="selectAll('shortcuts',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('shortcuts',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Shortcuts in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Shortcuts</strong> entry from GUST's Settings sidebar. The keyboard shortcuts enable/disable toggle and the full key binding list will be hidden from Settings.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-shortcuts" data-section="shortcuts" data-master-for="shortcuts-panel" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</div>
     <div class="settings-card-body">
@@ -619,6 +709,14 @@ button,input,select,textarea{font:inherit}
 <!-- CORE: TUTORIAL -->
 <div class="settings-section" data-section="core-tutorial">
   <div class="section-head"><div class="section-title">Tutorial</div><div class="select-btns"><button class="select-btn" onclick="selectAll('core-tutorial',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('core-tutorial',false)">None</button></div></div>
+  <div class="sidebar-master-bar">
+    <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
+    <div class="sidebar-master-bar-info">
+      <div class="sidebar-master-bar-label">Show Tutorial in Settings Sidebar</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Tutorial</strong> entry from GUST's Settings sidebar. The tutorial overlay, auto-launch on first load, and the restart button in Settings will all be hidden.</div>
+    </div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-tutorial" data-section="core-tutorial" data-master-for="tutorial-include tutorial-auto tutorial-settings" onclick="toggleSidebarMaster(this)"></div>
+  </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-map"></i> Interactive Tutorial</div>
     <div class="settings-card-body">
@@ -687,9 +785,19 @@ button,input,select,textarea{font:inherit}
 <div class="status-bar">
   <i class="fas fa-circle-info" style="color:var(--ac)" id="statusIcon"></i>
   <span id="statusText">Loading source…</span>
-  <span style="margin-left:auto;display:flex;align-items:center;gap:6px">
-    <span style="color:var(--tx3)">Enabled:</span>
-    <span style="color:var(--ac);font-weight:600;font-family:var(--mono)" id="totalCount">0/0</span>
+  <span style="margin-left:auto;display:flex;align-items:center;gap:14px">
+    <span style="display:flex;align-items:center;gap:6px">
+      <span style="color:var(--tx3)">Enabled:</span>
+      <span style="color:var(--ac);font-weight:600;font-family:var(--mono)" id="totalCount">0/0</span>
+    </span>
+    <span style="display:flex;align-items:center;gap:6px">
+      <span style="color:var(--tx3)">Patches removed:</span>
+      <span style="color:var(--warn);font-weight:600;font-family:var(--mono)" id="removedCount">0</span>
+    </span>
+    <span style="display:flex;align-items:center;gap:6px" id="fileSizeWrap" style="display:none">
+      <span style="color:var(--tx3)">File size:</span>
+      <span style="color:var(--ok);font-weight:600;font-family:var(--mono)" id="fileSizeCount">—</span>
+    </span>
   </span>
 </div>
 
@@ -737,7 +845,14 @@ const GH_URL  = 'https://github.com/nautilus-os/GUST/raw/refs/heads/main/index.h
 function resetCheckboxesToDefault() {
   document.querySelectorAll('.patch-check[data-patch]').forEach(el => {
     el.classList.add('checked');
+    el.classList.remove('master-disabled');
+    delete el.dataset.savedCheckedBySidebar;
   });
+  document.querySelectorAll('.sidebar-master-check[data-patch]').forEach(el => {
+    el.classList.add('checked');
+  });
+  // Re-apply master states after reset
+  document.querySelectorAll('.settings-card').forEach(c => c.classList.remove('master-disabled'));
   updateCounts();
 }
 
@@ -774,6 +889,13 @@ function updateCounts() {
     map[s].total++; totalAll++;
     if (el.classList.contains('checked')) { map[s].on++; totalOn++; }
   });
+  // Also count sidebar master bars
+  document.querySelectorAll('.sidebar-master-check[data-section]').forEach(el => {
+    const s = el.dataset.section;
+    if (!map[s]) map[s] = {on:0,total:0};
+    map[s].total++; totalAll++;
+    if (el.classList.contains('checked')) { map[s].on++; totalOn++; }
+  });
   Object.keys(map).forEach(s => {
     const b = document.getElementById('nc-' + s);
     if (!b) return;
@@ -781,6 +903,9 @@ function updateCounts() {
     b.classList.toggle('lit', map[s].on > 0);
   });
   document.getElementById('totalCount').textContent = totalOn + '/' + totalAll;
+  const removed = totalAll - totalOn;
+  const rc = document.getElementById('removedCount');
+  if (rc) { rc.textContent = removed; rc.style.color = removed > 0 ? 'var(--warn)' : 'var(--tx3)'; }
   const dlBtn = document.getElementById('downloadBtn');
   if (dlBtn && !dlBtn.disabled && sourceLoaded) {
     dlBtn.disabled = totalOn === 0;
@@ -829,12 +954,75 @@ function togglePatch(el) {
   updateCounts();
 }
 
+function toggleSidebarMaster(el) {
+  el.classList.toggle('checked');
+  const isChecked = el.classList.contains('checked');
+  const children = (el.dataset.masterFor || '').split(' ').filter(Boolean);
+
+  // Dim/enable all settings cards and patch rows in this section
+  const section = el.closest('.settings-section');
+  if (section) {
+    section.querySelectorAll('.settings-card').forEach(card => {
+      card.classList.toggle('master-disabled', !isChecked);
+    });
+    section.querySelectorAll('.patch-check').forEach(check => {
+      if (!isChecked) {
+        check.dataset.savedCheckedBySidebar = check.classList.contains('checked') ? '1' : '0';
+        check.classList.remove('checked');
+        check.classList.add('master-disabled');
+      } else {
+        check.classList.remove('master-disabled');
+        const saved = check.dataset.savedCheckedBySidebar;
+        if (saved === '0') {
+          check.classList.remove('checked');
+        } else {
+          check.classList.add('checked');
+        }
+        delete check.dataset.savedCheckedBySidebar;
+        // Re-apply any nested master state
+        if (check.dataset.masterFor) applyMasterState(check, check.classList.contains('checked'));
+      }
+    });
+  }
+  updateCounts();
+}
+
 function selectAll(sec, state) {
-  document.querySelectorAll(`.patch-check[data-section="${sec}"]`).forEach(e => {
-    if (state === false && e.classList.contains('master-disabled')) return;
-    e.classList.toggle('checked', state);
-    if (e.dataset.masterFor) applyMasterState(e, state);
-  });
+  // Toggle the sidebar master bar first
+  const masterBar = document.querySelector(`.sidebar-master-check[data-section="${sec}"]`);
+  if (masterBar) {
+    masterBar.classList.toggle('checked', state);
+    if (!state) {
+      // Disabling sidebar master — dim all cards and uncheck all patches
+      const section = masterBar.closest('.settings-section');
+      if (section) {
+        section.querySelectorAll('.settings-card').forEach(card => card.classList.add('master-disabled'));
+        section.querySelectorAll('.patch-check').forEach(check => {
+          check.dataset.savedCheckedBySidebar = check.classList.contains('checked') ? '1' : '0';
+          check.classList.remove('checked');
+          check.classList.add('master-disabled');
+        });
+      }
+    } else {
+      // Re-enabling sidebar master — restore all cards and patches
+      const section = masterBar.closest('.settings-section');
+      if (section) {
+        section.querySelectorAll('.settings-card').forEach(card => card.classList.remove('master-disabled'));
+        section.querySelectorAll('.patch-check').forEach(check => {
+          check.classList.remove('master-disabled');
+          delete check.dataset.savedCheckedBySidebar;
+          check.classList.toggle('checked', state);
+          if (check.dataset.masterFor) applyMasterState(check, state);
+        });
+      }
+    }
+  } else {
+    document.querySelectorAll(`.patch-check[data-section="${sec}"]`).forEach(e => {
+      if (state === false && e.classList.contains('master-disabled')) return;
+      e.classList.toggle('checked', state);
+      if (e.dataset.masterFor) applyMasterState(e, state);
+    });
+  }
   updateCounts();
 }
 
@@ -1021,7 +1209,7 @@ function buildPatchScript(removedPatches) {
     js('  if(typeof window[fn]==="function") window[fn]=function(){};');
     js('});');
   }
-  // badge(sel): hides sel with CSS and inserts a "removed by patcher" pill after each match
+  // badge(sel): hides sel with CSS and inserts a "removed by patcher" pill in the right-hand slot of the nearest flex row
   function badge(sel) {
     css(sel);
     js('(function(){');
@@ -1032,14 +1220,35 @@ function buildPatchScript(removedPatches) {
     js('      if(!el||el._gp_badged) return;');
     js('      el._gp_badged=true;');
     js('      var b=document.createElement("div");');
-    js('      b.style.cssText="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(255,180,80,0.10);border:1px solid rgba(255,180,80,0.28);border-radius:6px;font-size:11px;font-family:var(--mono,monospace);color:rgba(255,180,80,0.85);white-space:nowrap;flex-shrink:0;";');
+    js('      b.style.cssText="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(255,180,80,0.10);border:1px solid rgba(255,180,80,0.28);border-radius:6px;font-size:11px;font-family:var(--mono,monospace);color:rgba(255,180,80,0.85);white-space:nowrap;flex-shrink:0;margin-left:auto;";');
     js('      b.innerHTML=\'<i class="fas fa-lock" style="font-size:9px;"></i> removed by patcher\';');
-    js('      el.parentNode.insertBefore(b,el.nextSibling);');
+    js('      // Find the nearest flex row ancestor to append into the right slot');
+    js('      var row=el.closest(".settings-switch-row,.settings-toggle-row");');
+    js('      if(row){');
+    js('        // Insert badge as last child of the row so it sits in the right-hand slot');
+    js('        row.appendChild(b);');
+    js('      } else {');
+    js('        // Fallback: insert after the hidden element');
+    js('        el.parentNode.insertBefore(b,el.nextSibling);');
+    js('      }');
     js('    });');
     js('  }');
     js('  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",_inject);}else{_inject();}');
     js('})();');
   }
+
+  // ---- Sidebar nav hide rules (hides the nav item in GUST Browser Settings) ----
+  if (rm.has('sidebar-nav-connection'))    css('.settings-nav-item[data-section=\"connection\"]');
+  if (rm.has('sidebar-nav-fallback'))      css('.settings-nav-item[data-section=\"fallback\"]');
+  if (rm.has('sidebar-nav-search'))        css('.settings-nav-item[data-section=\"search\"]');
+  if (rm.has('sidebar-nav-privacy'))       css('.settings-nav-item[data-section=\"privacy\"]');
+  if (rm.has('sidebar-nav-cache'))         css('.settings-nav-item[data-section=\"cache\"]');
+  if (rm.has('sidebar-nav-filesandmedia')) css('.settings-nav-item[data-section=\"filesandmedia\"]');
+  if (rm.has('sidebar-nav-appearance'))    css('.settings-nav-item[data-section=\"appearance\"]');
+  if (rm.has('sidebar-nav-homescreen'))    css('.settings-nav-item[data-section=\"homescreen\"]');
+  if (rm.has('sidebar-nav-shortcuts'))     css('.settings-nav-item[data-section=\"shortcuts\"]');
+  if (rm.has('sidebar-nav-language'))      css('.settings-nav-item[data-section=\"language\"]');
+  if (rm.has('sidebar-nav-tutorial'))      css('.settings-nav-item[data-section=\"tutorial\"]');
 
   // ---- localStorage pre-seeds (keys verified against GUST source) ----
   if (rm.has('search-favicon'))  { ls('gust:favicon-proxy:v1','0'); }
@@ -1285,9 +1494,14 @@ function buildPatchScript(removedPatches) {
 function buildAndDownload() {
   setStatus('info', 'Building patched GUST...');
 
-  const removed = [...document.querySelectorAll('.patch-check[data-patch]')]
-    .filter(e => !e.classList.contains('checked'))
-    .map(e => e.dataset.patch);
+  const removed = [
+    ...[...document.querySelectorAll('.patch-check[data-patch]')]
+      .filter(e => !e.classList.contains('checked'))
+      .map(e => e.dataset.patch),
+    ...[...document.querySelectorAll('.sidebar-master-check[data-patch]')]
+      .filter(e => !e.classList.contains('checked'))
+      .map(e => e.dataset.patch)
+  ];
 
   let html = sourceHTML;
 
@@ -1322,6 +1536,10 @@ function buildAndDownload() {
   var kb = (html.length/1024).toFixed(0);
   var msg = removed.length ? ('Downloaded GUST-Patched.html - ' + kb + ' KB (' + removed.length + ' patch' + (removed.length>1?'es':'') + ' applied)') : ('Downloaded GUST-Patched.html - ' + kb + ' KB');
   setStatus('ok', msg);
+  const fsc = document.getElementById('fileSizeCount');
+  if (fsc) { fsc.textContent = kb + ' KB'; }
+  const fsw = document.getElementById('fileSizeWrap');
+  if (fsw) { fsw.style.display = 'flex'; fsw.style.alignItems = 'center'; fsw.style.gap = '6px'; }
 }
 
 // -- GUST Patcher Tutorial --------------------------------------------------
@@ -1758,9 +1976,14 @@ function downloadPreset(name) {
     el.classList.toggle('checked', presetEnabled.includes(el.dataset.patch));
   });
   // Build using the existing logic
-  const removed = [...document.querySelectorAll('.patch-check[data-patch]')]
-    .filter(e => !e.classList.contains('checked'))
-    .map(e => e.dataset.patch);
+  const removed = [
+    ...[...document.querySelectorAll('.patch-check[data-patch]')]
+      .filter(e => !e.classList.contains('checked'))
+      .map(e => e.dataset.patch),
+    ...[...document.querySelectorAll('.sidebar-master-check[data-patch]')]
+      .filter(e => !e.classList.contains('checked'))
+      .map(e => e.dataset.patch)
+  ];
   let html = sourceHTML;
   const patchScript = buildPatchScript(removed);
   if (patchScript) {

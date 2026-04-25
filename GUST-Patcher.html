@@ -134,6 +134,8 @@ button,input,select,textarea{font:inherit}
 .settings-nav-item[data-section="core-devtools"]:hover i { animation: _gust-jolt .4s ease forwards; }
 /* Metrics — chart: stamp (bars pressing down) */
 .settings-nav-item[data-section="core-metrics"]:hover i { animation: _gust-stamp .45s ease forwards; }
+/* Fallback — rotate-left: simple spin like reload button */
+.settings-nav-item[data-section="fallback"]:hover i { transform: rotate(-180deg); transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
 
 /* #/# badge */
 .nav-count{margin-left:auto;font-size:10px;font-weight:600;font-family:var(--mono);color:var(--tx3)}
@@ -177,6 +179,9 @@ button,input,select,textarea{font:inherit}
 .patch-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--bd);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:border-color .15s,background .15s}
 .patch-check.checked{border-color:var(--ac);background:rgba(157,229,255,.15)}
 .patch-check.checked::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:11px;color:var(--ac)}
+.patch-check.master-disabled{opacity:0.28;cursor:not-allowed;pointer-events:none;}
+.patch-row.master-disabled{opacity:0.35;pointer-events:none;transition:opacity .18s;}
+.settings-card.master-disabled{opacity:0.35;pointer-events:none;transition:opacity .18s;}
 
 /* Section header */
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -286,6 +291,7 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-core-label">Settings</div>
     <nav id="settingsNav2" style="padding:0 12px;">
       <button class="settings-nav-item" data-section="connection"><i class="fas fa-network-wired"></i><span class="nav-label">Connection</span><span class="nav-count" id="nc-connection"></span></button>
+      <button class="settings-nav-item" data-section="fallback"><i class="fas fa-rotate-left"></i><span class="nav-label">Fallback</span><span class="nav-count" id="nc-fallback"></span></button>
       <button class="settings-nav-item" data-section="search"><i class="fas fa-magnifying-glass"></i><span class="nav-label">Search</span><span class="nav-count" id="nc-search"></span></button>
       <button class="settings-nav-item" data-section="privacy"><i class="fas fa-shield-halved"></i><span class="nav-label">Privacy</span><span class="nav-count" id="nc-privacy"></span></button>
       <button class="settings-nav-item" data-section="cache"><i class="fas fa-database"></i><span class="nav-label">Cache</span><span class="nav-count" id="nc-cache"></span></button>
@@ -377,25 +383,54 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-network-wired"></i> WISP Server</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">WebSocket URL input</div><div class="patch-row-desc">Removes the WISP server URL input from Settings. The default server (wss://wisp.mercurywork.shop/wisp/) will always be used.</div></div><div class="patch-check checked" data-patch="wisp-url" data-section="connection" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">WebSocket URL input</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the WISP server URL input from Settings. The default server (wss://wisp.mercurywork.shop/) will always be used with no way to change it at runtime.</div></div><div class="patch-check checked" data-patch="wisp-url" data-section="connection" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-sliders"></i> Concurrent Requests</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Idle &amp; active thread steppers</div><div class="patch-row-desc">Removes the ±thread controls from Settings. Defaults (idle: 3, active: 6) will be used permanently.</div></div><div class="patch-check checked" data-patch="threads" data-section="connection" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Idle &amp; active thread steppers</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the thread count controls and retry counters from Settings. Defaults (idle: 3, active: 6, retries: 3) will be locked in permanently.</div></div><div class="patch-check checked" data-patch="threads" data-section="connection" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-ban"></i> WebRTC Blocking</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Block WebRTC connections</div><div class="patch-row-desc">Disables WebRTC blocking and removes the toggle from Settings. P2P connections can still bypass WISP.</div></div><div class="patch-check checked" data-patch="webrtc-block" data-section="connection" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Block WebRTC connections</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> WebRTC blocking and remove its toggle from Settings. P2P connections will be able to bypass the WISP proxy and may leak the real IP.</div></div><div class="patch-check checked" data-patch="webrtc-block" data-section="connection" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-shield-halved"></i> Smart Request Headers</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Spoof Sec-Fetch &amp; Referer headers</div><div class="patch-row-desc">Disables smart header spoofing and removes the toggle from Settings. Some CDNs may reject requests with incorrect fetch metadata.</div></div><div class="patch-check checked" data-patch="media-headers" data-section="connection" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Spoof Sec-Fetch &amp; Referer headers</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> smart header spoofing and remove its toggle from Settings. Some CDNs may reject requests with missing or incorrect fetch metadata headers.</div></div><div class="patch-check checked" data-patch="media-headers" data-section="connection" onclick="togglePatch(this)"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FALLBACK -->
+<div class="settings-section" data-section="fallback">
+  <div class="section-head"><div class="section-title">Fallback WISP</div><div class="select-btns"><button class="select-btn" onclick="selectAll('fallback',true)">Select all</button><span class="select-sep">·</span><button class="select-btn" onclick="selectAll('fallback',false)">None</button></div></div>
+  <div class="settings-card">
+    <div class="settings-card-head"><i class="fas fa-toggle-on"></i> Fallback Toggle</div>
+    <div class="settings-card-body">
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable fallback WISP switch</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> the entire fallback system and remove its toggle from Settings. If the primary WISP fails, GUST will show an error immediately with no retry or fallback attempt.</div></div><div class="patch-check" data-patch="fallback-enabled" data-section="fallback" data-master-for="fallback-wisp fallback-retries fallback-triggers" onclick="togglePatch(this)"></div></div>
+    </div>
+  </div>
+  <div class="settings-card" data-child-of="fallback-enabled">
+    <div class="settings-card-head"><i class="fas fa-server"></i> Fallback WISP URL</div>
+    <div class="settings-card-body">
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Fallback server URL input</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the fallback WISP URL input, save, and reset buttons from Settings. No fallback server can be configured at runtime — only useful if the fallback toggle is kept enabled.</div></div><div class="patch-check" data-patch="fallback-wisp" data-section="fallback" onclick="togglePatch(this)"></div></div>
+    </div>
+  </div>
+  <div class="settings-card" data-child-of="fallback-enabled">
+    <div class="settings-card-head"><i class="fas fa-clock-rotate-left"></i> Retry Policy</div>
+    <div class="settings-card-body">
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Main &amp; fallback retry counters + delay</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the main retry attempts, fallback retry attempts, and retry delay steppers from Settings. Defaults (3 main retries, 3 fallback retries, 3s delay) will be locked in permanently.</div></div><div class="patch-check" data-patch="fallback-retries" data-section="fallback" onclick="togglePatch(this)"></div></div>
+    </div>
+  </div>
+  <div class="settings-card" data-child-of="fallback-enabled">
+    <div class="settings-card-head"><i class="fas fa-triangle-exclamation"></i> Error Triggers</div>
+    <div class="settings-card-body">
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">5xx / timeout / DNS trigger toggles</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the error trigger switches from Settings. Fallback will trigger on all generic connection errors by default (5xx and timeout triggers default on, DNS trigger default off).</div></div><div class="patch-check" data-patch="fallback-triggers" data-section="fallback" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -406,19 +441,19 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-magnifying-glass"></i> Default Search Engine</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Search engine picker</div><div class="patch-row-desc">Removes the search engine selector from Settings. Brave Search will be locked in as the default.</div></div><div class="patch-check checked" data-patch="search-engine" data-section="search" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Search engine picker</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the search engine selector from Settings. Brave Search will be locked in as the default with no way to change it.</div></div><div class="patch-check checked" data-patch="search-engine" data-section="search" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-spell-check"></i> Spellcheck <span class="broken-tag">[BROKEN]</span></div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable spellcheck <span class="broken-tag">broken</span></div><div class="patch-row-desc">Removes the spellcheck toggle from Settings. It was non-functional in base GUST anyway — no behaviour change.</div></div><div class="patch-check checked" data-patch="spellcheck" data-section="search" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable spellcheck <span class="broken-tag">broken</span></div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the spellcheck toggle from Settings. It is non-functional in base GUST — unchecking has no behavioural effect.</div></div><div class="patch-check checked" data-patch="spellcheck" data-section="search" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-image"></i> Tab Favicons</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Proxy favicons through WISP</div><div class="patch-row-desc">Disables favicon proxying through WISP and removes the toggle from the Search section of Settings. Google's favicon service will be used instead.</div></div><div class="patch-check checked" data-patch="search-favicon" data-section="search" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Proxy favicons through WISP</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> favicon proxying through WISP and remove its toggle from Settings. Google's favicon service will be used instead — favicons may not load on some networks.</div></div><div class="patch-check checked" data-patch="search-favicon" data-section="search" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -429,26 +464,26 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-shield-halved"></i> Privacy &amp; Blocking</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Ad &amp; Tracker Blocking toggle</div><div class="patch-row-desc">Permanently disables ad/tracker blocking and removes the toggle from Settings and the toolbar. Cannot be re-enabled at runtime.</div></div><div class="patch-check checked" data-patch="adblock-toggle" data-section="privacy" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Ad &amp; Tracker Blocking toggle</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> ad/tracker blocking and remove its toggle from Settings and the toolbar. Cannot be re-enabled at runtime.</div></div><div class="patch-check checked" data-patch="adblock-toggle" data-section="privacy" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-code"></i> JavaScript Proxy</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Proxy scripts through GUST</div><div class="patch-row-desc">Permanently disables JS proxying and removes the toggle from Settings. Scripts will load directly — may cause CORS errors on some sites.</div></div><div class="patch-check checked" data-patch="js-proxy" data-section="privacy" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Proxy scripts through GUST</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> JS proxying and remove its toggle from Settings. Scripts will load directly — may cause CORS errors or breakage on some sites.</div></div><div class="patch-check checked" data-patch="js-proxy" data-section="privacy" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-user-secret"></i> User-Agent Spoofing</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Request User-Agent field</div><div class="patch-row-desc">Removes the request UA input from Settings. The browser's native User-Agent will be sent on all requests.</div></div><div class="patch-check checked" data-patch="ua-request" data-section="privacy" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Page navigator.userAgent field</div><div class="patch-row-desc">Removes the page UA input from Settings. navigator.userAgent inside pages will reflect the real browser value.</div></div><div class="patch-check checked" data-patch="ua-page" data-section="privacy" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Request User-Agent field</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the request UA input from Settings. The browser's native User-Agent will be sent on all proxy requests.</div></div><div class="patch-check checked" data-patch="ua-request" data-section="privacy" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Page navigator.userAgent field</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the page UA input from Settings. The real browser value will be exposed to pages via navigator.userAgent.</div></div><div class="patch-check checked" data-patch="ua-page" data-section="privacy" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-filter"></i> Blocklist &amp; Filters</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Custom Filter Rules textarea</div><div class="patch-row-desc">Removes the custom CSS filter textarea from Settings. You won't be able to add per-page hide rules at runtime.</div></div><div class="patch-check checked" data-patch="custom-filters" data-section="privacy" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Custom Filter Rules textarea</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the custom CSS filter textarea from Settings. Per-page hide rules cannot be added or edited at runtime.</div></div><div class="patch-check checked" data-patch="custom-filters" data-section="privacy" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -459,13 +494,13 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-layer-group"></i> Tab Caching</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Keep tabs loaded in background</div><div class="patch-row-desc">Permanently disables tab caching and removes the toggle from Settings. Background tabs will always be reloaded when switched to.</div></div><div class="patch-check checked" data-patch="tab-cache" data-section="cache" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Keep tabs loaded in background</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> tab caching and remove its toggle from Settings. Background tabs will always be fully reloaded when switched to.</div></div><div class="patch-check checked" data-patch="tab-cache" data-section="cache" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-database"></i> Resource Cache</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Clear Cache &amp; Reset All buttons</div><div class="patch-row-desc">Removes the Clear Cache and Reset Everything buttons from Settings. Cached data can only be cleared by clearing browser storage manually.</div></div><div class="patch-check checked" data-patch="clear-cache" data-section="cache" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Clear Cache &amp; Reset All buttons</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the Clear Cache and Reset Everything buttons from Settings. Cached data can only be cleared by wiping browser storage manually.</div></div><div class="patch-check checked" data-patch="clear-cache" data-section="cache" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -476,43 +511,43 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-film"></i> Media Range Requests</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable Range request support</div><div class="patch-row-desc">Disables Range requests and removes the toggle from Settings. Seeking in video/audio will not work.</div></div><div class="patch-check checked" data-patch="media-range" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable Range request support</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> Range requests and remove their toggle from Settings. Seeking in video and audio will not work.</div></div><div class="patch-check checked" data-patch="media-range" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-download"></i> Unknown File Types</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Auto-download unknown files</div><div class="patch-row-desc">Disables auto-downloading unknown MIME types and removes the toggle from Settings.</div></div><div class="patch-check checked" data-patch="media-download" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Auto-download unknown files</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> auto-downloading of unknown MIME types and remove the toggle from Settings. Unknown file types will fail silently instead of downloading.</div></div><div class="patch-check checked" data-patch="media-download" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-file-pdf"></i> PDF Viewer</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in PDF viewer</div><div class="patch-row-desc">Disables the PDF viewer and removes the toggle from Settings. PDFs will be downloaded instead.</div></div><div class="patch-check checked" data-patch="media-pdf" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in PDF viewer</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the PDF viewer and remove its toggle from Settings. PDF files will be downloaded instead of opening inline.</div></div><div class="patch-check checked" data-patch="media-pdf" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-image"></i> Image Viewer</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in image viewer</div><div class="patch-row-desc">Disables the image viewer and removes the toggle from Settings. Images will open as raw files.</div></div><div class="patch-check checked" data-patch="media-img" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in image viewer</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the image viewer and remove its toggle from Settings. Images will open as raw files or download rather than rendering inline.</div></div><div class="patch-check checked" data-patch="media-img" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-film"></i> Video Player</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in video player</div><div class="patch-row-desc">Disables the video player and removes the toggle from Settings. Video files will not play inline.</div></div><div class="patch-check checked" data-patch="media-video" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in video player</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the video player and remove its toggle from Settings. Video files will not play inline.</div></div><div class="patch-check checked" data-patch="media-video" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-music"></i> Audio Player</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in audio player</div><div class="patch-row-desc">Disables the audio player and removes the toggle from Settings. Audio files will not play inline.</div></div><div class="patch-check checked" data-patch="media-audio" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in audio player</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the audio player and remove its toggle from Settings. Audio files will not play inline.</div></div><div class="patch-check checked" data-patch="media-audio" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-file-lines"></i> Text / Code Viewer</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in text viewer</div><div class="patch-row-desc">Disables the text/code viewer and removes the toggle from Settings. Plain text files will be downloaded.</div></div><div class="patch-check checked" data-patch="media-text" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Built-in text viewer</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the text/code viewer and remove its toggle from Settings. Plain text and code files will be downloaded instead of rendering.</div></div><div class="patch-check checked" data-patch="media-text" data-section="filesandmedia" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -523,25 +558,25 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-text-width"></i> Font Size</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Font size slider</div><div class="patch-row-desc">Removes the font size slider from Settings. UI text size will be locked at the default.</div></div><div class="patch-check checked" data-patch="font-size" data-section="appearance" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Font size slider</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the font size slider from Settings. UI text size will be locked at the default with no way to adjust it.</div></div><div class="patch-check checked" data-patch="font-size" data-section="appearance" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-arrows-left-right"></i> Panel Widths</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Remember panel widths</div><div class="patch-row-desc">Disables panel width persistence and removes the toggle from Settings. Panels will reset to default width on every load.</div></div><div class="patch-check checked" data-patch="panel-widths" data-section="appearance" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Remember panel widths</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> panel width persistence and remove its toggle from Settings. Panels will reset to default width on every load.</div></div><div class="patch-check checked" data-patch="panel-widths" data-section="appearance" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-table-columns"></i> Panel Position</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Panels on the left</div><div class="patch-row-desc">Disables the left-panels option and removes the toggle from Settings. Panels will always be on the right.</div></div><div class="patch-check checked" data-patch="panels-left" data-section="appearance" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Panels on the left</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the left-panels option and remove its toggle from Settings. Panels will always be on the right.</div></div><div class="patch-check checked" data-patch="panels-left" data-section="appearance" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-expand"></i> Fullscreen on Launch</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Start in fullscreen</div><div class="patch-row-desc">Disables auto-fullscreen on launch and removes the toggle from Settings. GUST will open in a normal window.</div></div><div class="patch-check checked" data-patch="auto-fullscreen" data-section="appearance" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Start in fullscreen</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> auto-fullscreen on launch and remove its toggle from Settings. GUST will always open in a normal window.</div></div><div class="patch-check checked" data-patch="auto-fullscreen" data-section="appearance" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -552,20 +587,20 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-bookmark"></i> Bookmarks Bar</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Show Bookmarks Bar</div><div class="patch-row-desc">Disables the bookmarks bar and removes the toggle from Settings. Bookmarks will only be accessible via the history panel.</div></div><div class="patch-check checked" data-patch="bookmarks-bar" data-section="homescreen" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Show Bookmarks Bar</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> the bookmarks bar and remove its toggle from Settings. Bookmarks will only be accessible via the history panel.</div></div><div class="patch-check checked" data-patch="bookmarks-bar" data-section="homescreen" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-image"></i> New Tab Wallpaper</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Background image controls</div><div class="patch-row-desc">Removes the wallpaper change/reset buttons from Settings. The new tab background will be locked to the default.</div></div><div class="patch-check checked" data-patch="nt-wallpaper" data-section="homescreen" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Background image controls</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the wallpaper change and reset buttons from Settings. The new tab background will be locked to the default gradient.</div></div><div class="patch-check checked" data-patch="nt-wallpaper" data-section="homescreen" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-clock"></i> Home Page Clock</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Show clock on new tab</div><div class="patch-row-desc">Permanently hides the clock and removes the toggle from Settings.</div></div><div class="patch-check checked" data-patch="nt-clock" data-section="homescreen" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">24-hour clock</div><div class="patch-row-desc">Disables 24-hour format and removes the toggle from Settings. Clock will always use 12-hour format.</div></div><div class="patch-check checked" data-patch="nt-clock24" data-section="homescreen" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Show clock on new tab</div><div class="patch-row-desc"><strong>Uncheck to permanently hide</strong> the clock on the new tab page and remove its toggle from Settings.</div></div><div class="patch-check checked" data-patch="nt-clock" data-section="homescreen" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">24-hour clock</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> 24-hour format and remove its toggle from Settings. The clock will always display in 12-hour format.</div></div><div class="patch-check checked" data-patch="nt-clock24" data-section="homescreen" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -576,7 +611,7 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-keyboard"></i> Keyboard Shortcuts</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable shortcuts toggle + shortcut list</div><div class="patch-row-desc">Permanently disables keyboard shortcuts and removes the enable/disable toggle and key binding list from Settings.</div></div><div class="patch-check checked" data-patch="shortcuts-panel" data-section="shortcuts" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Enable shortcuts toggle + shortcut list</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> keyboard shortcuts and remove the enable/disable toggle and key binding list from Settings.</div></div><div class="patch-check checked" data-patch="shortcuts-panel" data-section="shortcuts" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -587,9 +622,9 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-map"></i> Interactive Tutorial</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Include tutorial overlay &amp; steps</div><div class="patch-row-desc">Removes the guided tour overlay entirely and pre-marks it as done so it never appears.</div></div><div class="patch-check checked" data-patch="tutorial-include" data-section="core-tutorial" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Auto-start on first load</div><div class="patch-row-desc">Pre-seeds the tutorial-done flag so GUST never auto-launches the tour on first open. The overlay is still present if triggered manually.</div></div><div class="patch-check checked" data-patch="tutorial-auto" data-section="core-tutorial" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Tutorial nav entry in Settings</div><div class="patch-row-desc">Removes the Tutorial nav item from the Settings sidebar so users can't manually re-launch the tour.</div></div><div class="patch-check checked" data-patch="tutorial-settings" data-section="core-tutorial" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Include tutorial overlay &amp; steps</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the guided tour overlay entirely and pre-mark it as done so it never appears. When unchecked, the two options below are also forced off.</div></div><div class="patch-check checked" data-patch="tutorial-include" data-section="core-tutorial" data-master-for="tutorial-auto tutorial-settings" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row" data-child-of="tutorial-include"><div class="patch-row-info"><div class="patch-row-label">Auto-start on first load</div><div class="patch-row-desc"><strong>Uncheck to suppress</strong> the tutorial auto-launch on first open by pre-seeding the done flag. The overlay is still present if triggered manually from Settings.</div></div><div class="patch-check checked" data-patch="tutorial-auto" data-section="core-tutorial" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row" data-child-of="tutorial-include"><div class="patch-row-info"><div class="patch-row-label">Tutorial nav entry in Settings</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the Tutorial nav item from the Settings sidebar so users cannot manually re-launch the tour.</div></div><div class="patch-check checked" data-patch="tutorial-settings" data-section="core-tutorial" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -600,9 +635,9 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-window-restore"></i> Tab System</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Drag-to-reorder tabs</div><div class="patch-row-desc">Blocks the pointer events that drive tab dragging. Tabs cannot be grabbed or reordered — no ghost, no slot, no reorder.</div></div><div class="patch-check checked" data-patch="tab-drag" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Right-click context menu on tabs</div><div class="patch-row-desc">Hides the tab context menu element. Right-clicking a tab will do nothing.</div></div><div class="patch-check checked" data-patch="tab-context" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Audio mute controls on tabs</div><div class="patch-row-desc">Hides the mute icon on tabs that are playing audio. Audio will still play — it just can't be muted from the tab.</div></div><div class="patch-check checked" data-patch="tab-mute" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Drag-to-reorder tabs</div><div class="patch-row-desc"><strong>Uncheck to disable</strong> tab dragging by blocking the pointer events that drive it. Tabs cannot be grabbed or reordered — no ghost, no slot indicator, no reorder.</div></div><div class="patch-check checked" data-patch="tab-drag" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Right-click context menu on tabs</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the tab context menu element. Right-clicking a tab will do nothing.</div></div><div class="patch-check checked" data-patch="tab-context" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Audio mute controls on tabs</div><div class="patch-row-desc"><strong>Uncheck to hide</strong> the mute icon on tabs that are playing audio. Audio will still play — it just cannot be muted from the tab strip.</div></div><div class="patch-check checked" data-patch="tab-mute" data-section="core-tabs" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -613,7 +648,7 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-shield-halved"></i> Ad Blocker</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Adblock shield toolbar button &amp; panel</div><div class="patch-row-desc">Removes the shield toolbar button and the floating adblock modal that shows per-page block counts and the on/off power button.</div></div><div class="patch-check checked" data-patch="adblock-panel" data-section="core-adblock" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Adblock shield toolbar button &amp; panel</div><div class="patch-row-desc"><strong>Uncheck to remove</strong> the shield toolbar button and the floating adblock modal that shows per-page block counts and the on/off power button.</div></div><div class="patch-check checked" data-patch="adblock-panel" data-section="core-adblock" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -624,13 +659,13 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-server"></i> Browser Logs</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Log panel &amp; toolbar toggle button</div><div class="patch-row-desc">Hides the logs toolbar button and the log panel. Real-time request logging will be unavailable.</div></div><div class="patch-check checked" data-patch="dev-logs" data-section="core-devtools" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Log panel &amp; toolbar toggle button</div><div class="patch-row-desc"><strong>Uncheck to hide</strong> the logs toolbar button and the log panel. Real-time request logging will be completely unavailable to the user.</div></div><div class="patch-check checked" data-patch="dev-logs" data-section="core-devtools" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-code"></i> Page Inspector</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Element inspector panel &amp; toolbar button</div><div class="patch-row-desc">Hides the inspector toolbar button and the elements panel. DOM/CSS inspection will be unavailable.</div></div><div class="patch-check checked" data-patch="dev-inspector" data-section="core-devtools" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Element inspector panel &amp; toolbar button</div><div class="patch-row-desc"><strong>Uncheck to hide</strong> the inspector toolbar button and the elements panel. DOM and CSS inspection will be completely unavailable to the user.</div></div><div class="patch-check checked" data-patch="dev-inspector" data-section="core-devtools" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -641,7 +676,7 @@ button,input,select,textarea{font:inherit}
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-chart-simple"></i> Browser Metrics</div>
     <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Metrics modal &amp; toolbar button</div><div class="patch-row-desc">Hides the metrics toolbar button and the stats popup. Live performance/network data will be unavailable.</div></div><div class="patch-check checked" data-patch="metrics" data-section="core-metrics" onclick="togglePatch(this)"></div></div>
+      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Metrics modal &amp; toolbar button</div><div class="patch-row-desc"><strong>Uncheck to hide</strong> the metrics toolbar button and the stats popup. Live performance and network data will be completely unavailable to the user.</div></div><div class="patch-check checked" data-patch="metrics" data-section="core-metrics" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
 </div>
@@ -752,9 +787,54 @@ function updateCounts() {
   }
 }
 
-function togglePatch(el) { el.classList.toggle('checked'); updateCounts(); }
+function applyMasterState(masterPatch, isChecked) {
+  const masterKey = masterPatch.dataset.patch;
+  const children = (masterPatch.dataset.masterFor || '').split(' ').filter(Boolean);
+
+  // Dim/undim child cards
+  document.querySelectorAll(`[data-child-of="${masterKey}"]`).forEach(el => {
+    el.classList.toggle('master-disabled', !isChecked);
+  });
+
+  children.forEach(childPatch => {
+    document.querySelectorAll(`.patch-check[data-patch="${childPatch}"]`).forEach(el => {
+      if (!isChecked) {
+        // Save current checked state before disabling, then uncheck
+        el.dataset.savedChecked = el.classList.contains('checked') ? '1' : '0';
+        el.classList.remove('checked');
+        el.classList.add('master-disabled');
+      } else {
+        el.classList.remove('master-disabled');
+        // Restore previously saved state (default to checked if no saved state)
+        const saved = el.dataset.savedChecked;
+        if (saved === '0') {
+          el.classList.remove('checked');
+        } else {
+          el.classList.add('checked');
+        }
+        delete el.dataset.savedChecked;
+      }
+    });
+  });
+}
+
+function togglePatch(el) {
+  // Don't toggle children of a disabled master
+  if (el.classList.contains('master-disabled')) return;
+  const wasChecked = el.classList.contains('checked');
+  el.classList.toggle('checked');
+  const isChecked = el.classList.contains('checked');
+  // If this is a master, cascade to children
+  if (el.dataset.masterFor) applyMasterState(el, isChecked);
+  updateCounts();
+}
+
 function selectAll(sec, state) {
-  document.querySelectorAll(`.patch-check[data-section="${sec}"]`).forEach(e => e.classList.toggle('checked', state));
+  document.querySelectorAll(`.patch-check[data-section="${sec}"]`).forEach(e => {
+    if (state === false && e.classList.contains('master-disabled')) return;
+    e.classList.toggle('checked', state);
+    if (e.dataset.masterFor) applyMasterState(e, state);
+  });
   updateCounts();
 }
 
@@ -941,9 +1021,28 @@ function buildPatchScript(removedPatches) {
     js('  if(typeof window[fn]==="function") window[fn]=function(){};');
     js('});');
   }
+  // badge(sel): hides sel with CSS and inserts a "removed by patcher" pill after each match
+  function badge(sel) {
+    css(sel);
+    js('(function(){');
+    js('  var _sels=' + JSON.stringify(sel.split(',').map(function(s){return s.trim();})) + ';');
+    js('  function _inject(){');
+    js('    _sels.forEach(function(s){');
+    js('      var el=document.querySelector(s);');
+    js('      if(!el||el._gp_badged) return;');
+    js('      el._gp_badged=true;');
+    js('      var b=document.createElement("div");');
+    js('      b.style.cssText="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(255,180,80,0.10);border:1px solid rgba(255,180,80,0.28);border-radius:6px;font-size:11px;font-family:var(--mono,monospace);color:rgba(255,180,80,0.85);white-space:nowrap;flex-shrink:0;";');
+    js('      b.innerHTML=\'<i class="fas fa-lock" style="font-size:9px;"></i> removed by patcher\';');
+    js('      el.parentNode.insertBefore(b,el.nextSibling);');
+    js('    });');
+    js('  }');
+    js('  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",_inject);}else{_inject();}');
+    js('})();');
+  }
 
   // ---- localStorage pre-seeds (keys verified against GUST source) ----
-  if (rm.has('search-favicon'))  { ls('gust:favicon-proxy:v1','false'); }
+  if (rm.has('search-favicon'))  { ls('gust:favicon-proxy:v1','0'); }
   if (rm.has('webrtc-block'))    { ls('gust:webrtc:block:v1','false'); }
   if (rm.has('media-headers'))   { ls('gust:media:headers:v1','false'); }
   if (rm.has('adblock-toggle'))  { ls('gust:block:v1','false'); }
@@ -967,6 +1066,10 @@ function buildPatchScript(removedPatches) {
     // All known tutorial-done key variants
     ls('gust:tutorial','done'); ls('gust:tutorial:done','1');
   }
+  if (rm.has('fallback-enabled'))  { ls('gust:fallback:enabled','0'); }
+  if (rm.has('fallback-5xx'))      { ls('gust:fallback:5xx','0'); }
+  if (rm.has('fallback-timeout'))  { ls('gust:fallback:timeout','0'); }
+  if (rm.has('fallback-dns'))      { ls('gust:fallback:dns','0'); }
 
   // ---- CSS hide rules (selectors verified against GUST source) ----
   // Each rule hides the settings UI element when that patch is removed.
@@ -974,30 +1077,55 @@ function buildPatchScript(removedPatches) {
   // disabled via the localStorage pre-seeds above.
 
   // Connection
-  if (rm.has('wisp-url'))
-    css('#settingsWispInput,#settingsWispSave,#settingsWispReset,#settingsWispStatus');
+  if (rm.has('wisp-url')) {
+    badge('#settingsWispRow');
+    css('#settingsWispStatus');
+  }
   if (rm.has('search-favicon'))
-    css('#faviconProxySwitch');
-  if (rm.has('threads'))
-    css('#settingsIdleMinus,#settingsIdleVal,#settingsIdlePlus,#settingsActiveMinus,#settingsActiveVal,#settingsActivePlus,#settingsThreadsSave,#settingsThreadsReset,#settingsThreadsStatus');
+    badge('#faviconProxySwitch');
+  if (rm.has('threads')) {
+    badge('#settingsIdleStepper');
+    badge('#settingsActiveStepper');
+    badge('#settingsThreadsSaveRow');
+    badge('#mainRetryStepper');
+    badge('#fallbackRetryStepper');
+    badge('#fallbackDelayStepper');
+  }
   if (rm.has('webrtc-block'))
-    css('#webrtcBlockSwitch');
+    badge('#webrtcBlockSwitch');
   if (rm.has('media-headers'))
-    css('#mediaHeadersSwitch');
+    badge('#mediaHeadersSwitch');
+
+  // Fallback WISP
+  if (rm.has('fallback-enabled'))
+    badge('#fallbackEnabledSwitch');
+  if (rm.has('fallback-wisp')) {
+    badge('#settingsFallbackWispRow');
+    css('#settingsFallbackWispStatus');
+  }
+  if (rm.has('fallback-retries')) {
+    badge('#mainRetryStepper');
+    badge('#fallbackRetryStepper');
+    badge('#fallbackDelayStepper');
+  }
+  if (rm.has('fallback-triggers'))
+    badge('#fallback5xxSwitch,#fallbackTimeoutSwitch,#fallbackDnsSwitch');
 
   // Search
   if (rm.has('search-engine'))
     css('#settingsEngineRows');
   if (rm.has('spellcheck'))
-    css('#settingsSpellSwitch');
+    badge('#settingsSpellSwitch');
   if (rm.has('language'))
-    css('.settings-nav-item[data-section="language"],#settingsLanguage,#settingsLanguageTrigger,#settingsLanguagePanel,#settingsLanguageSave,#settingsLanguageStatus');
+    css('#settingsLanguage,#settingsLanguageTrigger,#settingsLanguagePanel,#settingsLanguageSave,#settingsLanguageStatus');
 
   // Privacy
-  if (rm.has('adblock-toggle'))
-    css('#settingsBlockSwitch,#blockToggle');
+  if (rm.has('adblock-toggle')) {
+    badge('#settingsBlockSwitch');
+    css('#blockToggle');
+  }
   if (rm.has('js-proxy'))
-    css('#settingsJsProxySwitch');
+    badge('#settingsJsProxySwitch');
   if (rm.has('ua-request'))
     css('#settingsRequestUA');
   if (rm.has('ua-page'))
@@ -1007,48 +1135,50 @@ function buildPatchScript(removedPatches) {
 
   // Cache
   if (rm.has('tab-cache'))
-    css('#settingsTabCacheSwitch');
+    badge('#settingsTabCacheSwitch');
   if (rm.has('clear-cache'))
     css('#settingsClearCache,#settingsResetEverything');
 
   // Files & Media
-  if (rm.has('media-range'))     css('#mediaRangeSwitch');
-  if (rm.has('media-download'))  css('#mediaDownloadSwitch');
-  if (rm.has('media-pdf'))       css('#mediaPdfSwitch');
-  if (rm.has('media-img'))       css('#mediaImgSwitch');
-  if (rm.has('media-video'))     css('#mediaVideoSwitch');
-  if (rm.has('media-audio'))     css('#mediaAudioSwitch');
-  if (rm.has('media-text'))      css('#mediaTextSwitch');
+  if (rm.has('media-range'))     badge('#mediaRangeSwitch');
+  if (rm.has('media-download'))  badge('#mediaDownloadSwitch');
+  if (rm.has('media-pdf'))       badge('#mediaPdfSwitch');
+  if (rm.has('media-img'))       badge('#mediaImgSwitch');
+  if (rm.has('media-video'))     badge('#mediaVideoSwitch');
+  if (rm.has('media-audio'))     badge('#mediaAudioSwitch');
+  if (rm.has('media-text'))      badge('#mediaTextSwitch');
 
   // Appearance
   if (rm.has('font-size'))
     css('#settingsFontSlider,#settingsFontReset');
   if (rm.has('panel-widths'))
-    css('#settingsPanelWidthSwitch');
+    badge('#settingsPanelWidthSwitch');
   if (rm.has('panels-left'))
-    css('#settingsPanelsLeftSwitch');
+    badge('#settingsPanelsLeftSwitch');
   if (rm.has('auto-fullscreen'))
-    css('#settingsAutoFullscreenSwitch');
+    badge('#settingsAutoFullscreenSwitch');
 
   // Home Screen
   if (rm.has('bookmarks-bar'))
-    css('#settingsBookmarksBarSwitch');
+    badge('#settingsBookmarksBarSwitch');
   if (rm.has('nt-wallpaper'))
     css('#settingsWallpaperChange,#settingsWallpaperReset,#settingsWallpaperStatus,#wallpaperModal,#ntWallpaperBtn');
   if (rm.has('nt-clock'))
-    css('#settingsClockSwitch');
+    badge('#settingsClockSwitch');
   if (rm.has('nt-clock24'))
-    css('#settings24hrSwitch');
+    badge('#settings24hrSwitch');
 
   // Shortcuts
-  if (rm.has('shortcuts-panel'))
-    css('#settingsShortcutsEnabledSwitch,#shortcutsList');
+  if (rm.has('shortcuts-panel')) {
+    badge('#settingsShortcutsEnabledSwitch');
+    css('#shortcutsList');
+  }
 
   // Tutorial
   if (rm.has('tutorial-include'))
     css('#tutorialOverlay');
-  if (rm.has('tutorial-settings'))
-    css('.settings-nav-item[data-section="tutorial"]');
+  if (rm.has('tutorial-include') || rm.has('tutorial-settings'))
+    badge('#restartTutorialBtn');
 
   // Core — Ad Blocker panel (toolbar button + modal)
   if (rm.has('adblock-panel'))
@@ -1146,9 +1276,7 @@ function buildPatchScript(removedPatches) {
   out += '(function(){\n';
   out += '  var b=' + JSON.stringify(b64) + ';\n';
   out += '  var c=decodeURIComponent(escape(atob(b)));\n';
-  out += '  var sc=document.createElement("script");\n';
-  out += '  sc.textContent=c;\n';
-  out += '  (document.head||document.documentElement).appendChild(sc);\n';
+  out += '  try{eval(c);}catch(e){console.error("[GUST Patcher] patch failed:",e);}\n';
   out += '})();\n';
   out += '<\/script>';
   return '\n' + out + '\n';
@@ -1671,6 +1799,10 @@ function updatePresetButtons() {
 
 fetchSource();
 updateCounts();
+// Initialize master switch child dimming on load
+document.querySelectorAll('.patch-check[data-master-for]').forEach(master => {
+  applyMasterState(master, master.classList.contains('checked'));
+});
 </script>
 </body>
 </html>

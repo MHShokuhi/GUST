@@ -3936,7 +3936,7 @@
                                     </div>
                                     <div class="settings-card-body">
                                         <label class="settings-label">WebSocket URL</label>
-                                        <div style="display:flex; gap:8px;">
+                                        <div style="display:flex; gap:8px;" id="settingsWispRow">
                                             <input type="text" class="settings-input" id="settingsWispInput" value=""
                                                 placeholder="wss://...">
                                             <button class="settings-btn-icon" id="settingsWispSave" title="Save"><i
@@ -3959,7 +3959,7 @@
                                                 <div class="settings-hint">Max simultaneous requests when page is loaded
                                                     (default: 3). Lower = less background CPU.</div>
                                             </div>
-                                            <div style="display:flex;align-items:center;gap:6px;">
+                                            <div style="display:flex;align-items:center;gap:6px;" id="settingsIdleStepper">
                                                 <button class="settings-btn-icon" id="settingsIdleMinus"
                                                     style="width:28px;height:28px;font-size:14px;">−</button>
                                                 <span id="settingsIdleVal"
@@ -3974,7 +3974,7 @@
                                                 <div class="settings-hint">Max simultaneous requests during page load
                                                     (default: 6). Higher = faster loads but more CPU.</div>
                                             </div>
-                                            <div style="display:flex;align-items:center;gap:6px;">
+                                            <div style="display:flex;align-items:center;gap:6px;" id="settingsActiveStepper">
                                                 <button class="settings-btn-icon" id="settingsActiveMinus"
                                                     style="width:28px;height:28px;font-size:14px;">−</button>
                                                 <span id="settingsActiveVal"
@@ -3984,7 +3984,7 @@
                                             </div>
                                         </div>
                                         <hr style="border:none;border-top:1px solid var(--bd);margin:12px 0 10px;">
-                                        <div style="display:flex;justify-content:flex-end;gap:8px;">
+                                        <div style="display:flex;justify-content:flex-end;gap:8px;" id="settingsThreadsSaveRow">
                                             <button class="settings-btn-icon" id="settingsThreadsSave" title="Save"><i
                                                     class="fas fa-check"></i></button>
                                             <button class="settings-btn-icon" id="settingsThreadsReset"
@@ -4757,12 +4757,12 @@
                                     </div>
                                 </div>
 
-                                <div class="settings-card">
+                                <div class="settings-card" id="fallbackWispCard">
                                     <div class="settings-card-head"><i class="fas fa-server"></i> Fallback WISP Server</div>
                                     <div class="settings-card-body">
                                         <label class="settings-label">Fallback WebSocket URL</label>
                                         <div class="settings-hint" style="margin-bottom:10px;">Used only when the primary WISP server is unreachable or returns an error. Leave blank to disable.</div>
-                                        <div style="display:flex; gap:8px;">
+                                        <div style="display:flex; gap:8px;" id="settingsFallbackWispRow">
                                             <input type="text" class="settings-input" id="settingsFallbackWispInput"
                                                 placeholder="wss://fallback.example.com/wisp/">
                                             <button class="settings-btn-icon" id="settingsFallbackWispSave" title="Save"><i
@@ -4774,7 +4774,7 @@
                                     </div>
                                 </div>
 
-                                <div class="settings-card">
+                                <div class="settings-card" id="fallbackRetryCard">
                                     <div class="settings-card-head"><i class="fas fa-clock-rotate-left"></i> Retry Policy</div>
                                     <div class="settings-card-body">
                                         <div class="settings-switch-row" style="align-items:center;">
@@ -4782,7 +4782,7 @@
                                                 <div class="settings-switch-label">Max retry attempts (main)</div>
                                                 <div class="settings-hint">How many times Gust retries on the primary WISP server before switching to the fallback.</div>
                                             </div>
-                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" id="mainRetryStepper">
                                                 <button class="settings-btn-icon" id="mainRetryMinus" title="Decrease"><i class="fas fa-minus"></i></button>
                                                 <span id="mainRetryVal" style="font-family:var(--mono); font-size:14px; min-width:24px; text-align:center; color:var(--tx);">3</span>
                                                 <button class="settings-btn-icon" id="mainRetryPlus" title="Increase"><i class="fas fa-plus"></i></button>
@@ -4793,7 +4793,7 @@
                                                 <div class="settings-switch-label">Max retry attempts (fallback)</div>
                                                 <div class="settings-hint">How many times Gust will attempt the fallback WISP before giving up and showing an error.</div>
                                             </div>
-                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" id="fallbackRetryStepper">
                                                 <button class="settings-btn-icon" id="fallbackRetryMinus" title="Decrease"><i class="fas fa-minus"></i></button>
                                                 <span id="fallbackRetryVal" style="font-family:var(--mono); font-size:14px; min-width:24px; text-align:center; color:var(--tx);">3</span>
                                                 <button class="settings-btn-icon" id="fallbackRetryPlus" title="Increase"><i class="fas fa-plus"></i></button>
@@ -4804,7 +4804,7 @@
                                                 <div class="settings-switch-label">Retry delay (seconds)</div>
                                                 <div class="settings-hint">Wait time between each retry attempt before switching to the fallback server.</div>
                                             </div>
-                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                                            <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;" id="fallbackDelayStepper">
                                                 <button class="settings-btn-icon" id="fallbackDelayMinus" title="Decrease"><i class="fas fa-minus"></i></button>
                                                 <span id="fallbackDelayVal" style="font-family:var(--mono); font-size:14px; min-width:24px; text-align:center; color:var(--tx);">3</span>
                                                 <button class="settings-btn-icon" id="fallbackDelayPlus" title="Increase"><i class="fas fa-plus"></i></button>
@@ -4813,7 +4813,7 @@
                                     </div>
                                 </div>
 
-                                <div class="settings-card">
+                                <div class="settings-card" id="fallbackTriggersCard">
                                     <div class="settings-card-head"><i class="fas fa-triangle-exclamation"></i> Error Triggers</div>
                                     <div class="settings-card-body">
                                         <div class="settings-switch-row">
@@ -13727,8 +13727,21 @@ _VIEWER_DL_JS +
                     sw.addEventListener('click', () => {
                         const isOn = sw.classList.toggle('on');
                         try { ls.setItem(key, isOn ? '1' : '0'); } catch(e) {}
+                        if (id === 'fallbackEnabledSwitch') applyFallbackEnabledState(isOn);
                     });
                 });
+
+                const _fbSubCards = ['fallbackWispCard','fallbackRetryCard','fallbackTriggersCard'].map(i => document.getElementById(i));
+                function applyFallbackEnabledState(enabled) {
+                    _fbSubCards.forEach(card => {
+                        if (!card) return;
+                        card.style.opacity = enabled ? '' : '0.38';
+                        card.style.pointerEvents = enabled ? '' : 'none';
+                        card.style.transition = 'opacity .2s';
+                    });
+                }
+                // Apply initial state
+                try { applyFallbackEnabledState(ls.getItem('gust:fallback:enabled') !== '0'); } catch(e) { applyFallbackEnabledState(true); }
 
                 // Fallback WISP URL
                 const fbInput  = document.getElementById('settingsFallbackWispInput');

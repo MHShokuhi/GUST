@@ -507,20 +507,14 @@ button,input,select,textarea{font:inherit}
     <div class="sidebar-master-bar-icon"><i class="fas fa-table-list"></i></div>
     <div class="sidebar-master-bar-info">
       <div class="sidebar-master-bar-label">Show Privacy in Settings Sidebar</div>
-      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Privacy</strong> entry from GUST's Settings sidebar. Ad blocking, JS proxy, user-agent spoofing, and custom filter rules will all be hidden from Settings.</div>
+      <div class="sidebar-master-bar-desc">Uncheck to remove the <strong>Privacy</strong> entry from GUST's Settings sidebar. Ad blocking, user-agent spoofing, and custom filter rules will all be hidden from Settings.</div>
     </div>
-    <div class="sidebar-master-check checked" data-patch="sidebar-nav-privacy" data-section="privacy" data-master-for="adblock-toggle js-proxy ua-request ua-page custom-filters" onclick="toggleSidebarMaster(this)"></div>
+    <div class="sidebar-master-check checked" data-patch="sidebar-nav-privacy" data-section="privacy" data-master-for="adblock-toggle ua-request ua-page custom-filters" onclick="toggleSidebarMaster(this)"></div>
   </div>
   <div class="settings-card">
     <div class="settings-card-head"><i class="fas fa-shield-halved"></i> Privacy &amp; Blocking</div>
     <div class="settings-card-body">
       <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Ad &amp; Tracker Blocking toggle</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> ad/tracker blocking and remove its toggle from Settings and the toolbar. Cannot be re-enabled at runtime.</div></div><div class="patch-check checked" data-patch="adblock-toggle" data-section="privacy" onclick="togglePatch(this)"></div></div>
-    </div>
-  </div>
-  <div class="settings-card">
-    <div class="settings-card-head"><i class="fas fa-code"></i> JavaScript Proxy</div>
-    <div class="settings-card-body">
-      <div class="patch-row"><div class="patch-row-info"><div class="patch-row-label">Proxy scripts through GUST</div><div class="patch-row-desc"><strong>Uncheck to permanently disable</strong> JS proxying and remove its toggle from Settings. Scripts will load directly — may cause CORS errors or breakage on some sites.</div></div><div class="patch-check checked" data-patch="js-proxy" data-section="privacy" onclick="togglePatch(this)"></div></div>
     </div>
   </div>
   <div class="settings-card">
@@ -1255,7 +1249,6 @@ function buildPatchScript(removedPatches) {
   if (rm.has('webrtc-block'))    { ls('gust:webrtc:block:v1','0'); }
   if (rm.has('media-headers'))   { ls('gust:media:headers:v1','0'); }
   if (rm.has('adblock-toggle'))  { ls('gust:block:v1','false'); }
-  if (rm.has('js-proxy'))        { ls('gust:jsproxy:v1','false'); }
   if (rm.has('tab-cache'))       { ls('gust:tabcache:v1','false'); }
   if (rm.has('media-range'))     { ls('gust:media:range:v1','0'); }
   if (rm.has('media-download'))  { ls('gust:media:download:v1','0'); }
@@ -1330,8 +1323,6 @@ function buildPatchScript(removedPatches) {
     badge('#settingsBlockSwitch');
     css('#blockToggle');
   }
-  if (rm.has('js-proxy'))
-    badge('#settingsJsProxySwitch');
   if (rm.has('ua-request')) {
     css('#settingsRequestUA');
     js('(function(){');
